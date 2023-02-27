@@ -1,0 +1,35 @@
+.row.column
+  %h1 My Rating History
+
+.row.search-sort
+  .medium-3.columns.float-right
+    = form_tag(ratings_path, method: :get) do
+      .input-group
+        %span.input-group-label Sort by
+        = select_tag :sort, options_for_select(["date", "book title", "usefulness"], params[:sort]), onchange: "this.form.submit()", class: "input-group-field"
+
+.row.column
+  %table
+    %thead
+      %tr
+        %th Date
+        %th Book
+        %th Opinion
+        %th Usefulness
+    %tbody
+      - @ratings.each do |rating|
+        %tr
+          %td= rating.created_at.strftime("%b %d, %Y")
+          %td
+            = link_to book_path(rating.opinion.book) do
+              = rating.opinion.book.title
+          %td
+            .bold
+              = "Score: #{rating.opinion.score}"
+            = rating.opinion.comment
+            .italic
+              = "by #{rating.opinion.user.full_name}"
+          %td= @map[rating.usefulness]
+.row
+  .float-right
+    = paginate @ratings

@@ -1,0 +1,58 @@
+.row.admin-panel
+  .medium-4.columns
+    %h1 Book List
+  .medium-3.columns
+    .expanded.button-group
+      = link_to 'Statistics', stats_admin_books_path, class: 'secondary button'
+      = link_to 'New book', new_admin_book_path, class: 'button'
+
+.row.search-sort
+  = form_tag(admin_books_path, method: :get) do
+    .medium-6.columns
+      %ul.menu
+        %li
+          = hidden_field_tag :authors,   params[:authors]
+          = hidden_field_tag :publisher, params[:publisher]
+          = hidden_field_tag :subject,   params[:subject]
+          .input-group
+            = text_field_tag :title, params[:title], placeholder: "Search Title", class: "input-group-field"
+            .input-group-button
+              = submit_tag "Search", class: "button"
+        %li
+          %a.button.success.open-modal{"data-open": "adminAdvancedSearch"} More Filters
+    .medium-3.columns
+      .input-group
+        %span.input-group-label Sort by
+        = select_tag :sort, options_for_select(["year", "inventory"], params[:sort]), include_blank: true, onchange: "this.form.submit()", class: "input-group-field"
+
+.row.column
+  %table.hover
+    %thead
+      %tr
+        %th Title
+        %th ISBN
+        %th Author(s)
+        %th Publisher
+        %th Year
+        %th Inventory
+        %th{colspan: "2"} Actions
+
+    %tbody
+      - @books.each do |book|
+        %tr
+          %td= book.title
+          %td= book.isbn
+          %td= book.authors
+          %td= book.publisher
+          %td= book.year
+          %td
+            = form_for book, url: admin_book_path(book), method: :patch do |f|
+              = select("book", "inventory", 1..25, {selected: book.inventory}, {onchange: "this.form.submit()"})
+          %td.vertical-aligned= link_to 'Show', admin_book_path(book), class: 'success button'
+          %td.vertical-aligned= link_to 'Edit', edit_admin_book_path(book), class: 'warning button'
+
+.row
+  .float-right
+    = paginate @books
+
+= render "layouts/modal"

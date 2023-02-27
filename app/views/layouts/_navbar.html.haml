@@ -1,0 +1,24 @@
+.top-bar
+  .row
+    .top-bar-left
+      %ul.menu
+        %li.bold
+          = link_to "B&N Bookstore", root_path
+    .top-bar-right
+      %ul.dropdown.menu{"data-dropdown-menu": ""}
+        - if user_signed_in?
+          %li
+            = link_to carts_path do
+              %i.fi-shopping-cart
+              = "My Cart (#{current_user.cart_count})"
+          %li.has-submenu
+            = current_user.full_name
+            %ul.submenu.menu.vertical{"data-submenu": ""}
+              %li= link_to 'Order History', orders_path
+              %li= link_to 'Review History', opinions_path
+              %li= link_to 'Rating History', ratings_path
+              %li= link_to 'Profile', user_path(current_user)
+              %li= link_to 'Log out', destroy_user_session_path, method: :delete
+        - else
+          %li= link_to 'Log In', new_user_session_path
+          %li= link_to 'Sign Up', new_user_registration_path

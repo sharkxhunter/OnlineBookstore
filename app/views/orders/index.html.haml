@@ -1,0 +1,32 @@
+.row.column
+  %h1 My Order History
+
+.row.search-sort
+  .medium-3.columns.float-right
+    = form_tag(orders_path, method: :get) do
+      .input-group
+        %span.input-group-label Sort by
+        = select_tag :sort, options_for_select(["date", "status"], params[:sort]), onchange: "this.form.submit()", class: "input-group-field"
+
+.row.column
+  %table
+    %thead
+      %tr
+        %th Date
+        %th Books Ordered
+        %th Status
+    %tbody
+      - @orders.each do |order|
+        %tr
+          %td= order.created_at.strftime("%b %d, %Y")
+          %td
+            - order.manifests.each do |manifest|
+              = link_to book_path(manifest.book) do
+                = manifest.book.title
+              .float-right
+                = "#{manifest.quantity} copy(s)"
+              %br
+          %td= @map[order.status]
+.row
+  .float-right
+    = paginate @orders
